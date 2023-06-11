@@ -87,6 +87,7 @@ void UGrabber::Release()
 	if (IsGrabbing)
 	{
 		IsGrabbing = false;
+		PhysicsHandle->GetGrabbedComponent()->WakeAllRigidBodies();
 		PhysicsHandle->ReleaseComponent();
 	}
 }
