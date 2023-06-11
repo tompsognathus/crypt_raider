@@ -34,12 +34,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	
 	DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Red);
 	
-	float Damage = 0;
-	UE_LOG(LogTemp, Warning, TEXT("Damage before: %f"), Damage);
+	FHitResult HitResult;
+	bool HasHit = GetWorld()->SweepSingleByChannel(
+		HitResult, 
+		DebugLineStart, DebugLineEnd, 
+		FQuat::Identity, 
+		ECC_GameTraceChannel2, 
+		FCollisionShape::MakeSphere(GrabRadius)
+	);
 
-	float& DamageRef = Damage;
-	DamageRef = 10;
-
-	UE_LOG(LogTemp, Warning, TEXT("Damage after: %f"), Damage);
 }
 
