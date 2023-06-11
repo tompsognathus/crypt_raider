@@ -24,10 +24,18 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Release();
+
+	UFUNCTION(BlueprintCallable)
+	void Grab();
+
 private:
 	UPROPERTY(EditAnywhere)
 	float MaxGrabDistance = 400;
 
 	UPROPERTY(EditAnywhere)
 	float GrabRadius = 100;
+
+	bool IsGrabbing = false;
 };
