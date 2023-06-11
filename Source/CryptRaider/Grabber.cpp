@@ -3,7 +3,6 @@
 #include "Grabber.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -20,16 +19,7 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle != nullptr)
-	{
-
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PhysicsHandleComponent is nullptr"));
-	}
+	PhysicsHandle = GetPhysicsHandle();
 }
 
 
@@ -37,21 +27,28 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
+	// Set destination and rotation for grabbed object
+	if (IsGrabbing)
+	{
+		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+		FRotator TargetRotation = GetComponentRotation();
+		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, TargetRotation);
+	}
 }
 
 void UGrabber::Grab()
 {
 	FHitResult HitResult;
 
-	FVector DebugLineStart = GetComponentLocation();
-	FVector DebugLineEnd = DebugLineStart + GetForwardVector() * MaxGrabDistance;
+	FVector SweepStart = GetComponentLocation();
+	FVector SweepEnd = SweepStart + GetForwardVector() * MaxGrabDistance;
 	
-	DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Red);
+	DrawDebugLine(GetWorld(), SweepStart, SweepEnd, FColor::Red);
 
 	bool HasHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		DebugLineStart, DebugLineEnd,
+		SweepStart, SweepEnd,
 		FQuat::Identity,
 		ECC_GameTraceChannel2,
 		FCollisionShape::MakeSphere(GrabRadius)
@@ -59,10 +56,13 @@ void UGrabber::Grab()
 
 	if (HasHit)
 	{
-		AActor* HitActor = HitResult.GetActor();
-		FVector ImpactPt = HitResult.ImpactPoint;
-
-		DrawDebugSphere(GetWorld(), ImpactPt, 10, 10, FColor::Red, false, 5);
+		// Grab targeted object
+		PhysicsHandle->GrabComponentAtLocationWithRotation(
+			HitResult.GetComponent(),
+			NAME_None,
+			HitResult.ImpactPoint,
+			GetComponentRotation()
+		);
 
 		IsGrabbing = true;
 	}
@@ -77,11 +77,17 @@ void UGrabber::Release()
 	if (IsGrabbing)
 	{
 		IsGrabbing = false;
+		PhysicsHandle->ReleaseComponent();
 	}
-	else
-	{
-
-	}
-
 }
 
+UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
+{
+	UPhysicsHandleComponent* Result = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No PhysicsHandleComponent found on %s"), *GetOwner()->GetName());
+	}
+
+	return Result;
+}

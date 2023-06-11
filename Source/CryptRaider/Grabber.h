@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Grabber.generated.h"
 
 
@@ -37,5 +38,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	float GrabRadius = 100;
 
+	UPROPERTY(EditAnywhere)
+	float HoldDistance = 200;
+
 	bool IsGrabbing = false;
+	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+
+	UPhysicsHandleComponent* GetPhysicsHandle() const;
 };
