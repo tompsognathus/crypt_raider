@@ -56,6 +56,16 @@ void UGrabber::Grab()
 
 	if (HasHit)
 	{
+		// Wake up physics body
+		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+		if (HitComponent != nullptr)
+		{
+			HitComponent->WakeAllRigidBodies();
+		}
+		else
+{
+			UE_LOG(LogTemp, Warning, TEXT("HitComponent is null"));
+		}
 		// Grab targeted object
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitResult.GetComponent(),
