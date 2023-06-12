@@ -25,6 +25,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void Move(float DeltaTime);
+	void SetShouldMove(bool NewShouldMove);
 
 private:
 	FVector InitialLocation;	

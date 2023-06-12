@@ -40,7 +40,7 @@ void UMover::Move(float DeltaTime)
 	{
 		FVector CurrentLocation = GetOwner()->GetActorLocation();
 
-		if (FVector::Dist(CurrentLocation, TargetLocation) > 1)
+		if (FVector::Dist(CurrentLocation, TargetLocation) > 10)
 		{
 			FVector NewLocation = CurrentLocation + MoveSpeed * DeltaTime * MoveDirection;
 			GetOwner()->SetActorLocation(NewLocation);
@@ -58,3 +58,8 @@ void UMover::Move(float DeltaTime)
 	}
 }
 
+
+void UMover::SetShouldMove(bool NewShouldMove)
+{
+	ShouldMove = NewShouldMove;
+}

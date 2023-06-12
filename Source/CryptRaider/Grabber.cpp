@@ -55,6 +55,7 @@ void UGrabber::Grab()
 {
 			UE_LOG(LogTemp, Warning, TEXT("HitComponent is null"));
 		}
+
 		// Grab targeted object
 		PhysicsHandle->GrabComponentAtLocationWithRotation(
 			HitResult.GetComponent(),
@@ -63,6 +64,8 @@ void UGrabber::Grab()
 			GetComponentRotation()
 		);
 
+		HitResult.GetActor()->Tags.Add("Grabbed");
+		HitResult.GetActor()->Tags.Remove("Released");
 		IsGrabbing = true;
 	}
 	else
@@ -93,8 +96,14 @@ void UGrabber::Release()
 {
 	if (IsGrabbing)
 	{
+
 		IsGrabbing = false;
+
 		PhysicsHandle->GetGrabbedComponent()->WakeAllRigidBodies();
+
+		PhysicsHandle->GetGrabbedComponent()->GetOwner()->Tags.Add("Released");
+		PhysicsHandle->GetGrabbedComponent()->GetOwner()->Tags.Remove("Grabbed");
+
 		PhysicsHandle->ReleaseComponent();
 	}
 }
