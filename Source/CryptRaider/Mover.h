@@ -25,12 +25,11 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void Move(float DeltaTime);
+	void Rotate(float DeltaTime);
 	void SetShouldMove(bool NewShouldMove);
+	void SetShouldRotate(bool NewShouldRotate);
 
 private:
-	FVector InitialLocation;	
-	FVector TargetLocation;
-
 	// Vector that determines the direction of movement. Will be normalized in code.
 	UPROPERTY(EditAnywhere)
 	FVector MoveDirection;
@@ -45,5 +44,20 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool ShouldMove = false;
 
+	UPROPERTY(EditAnywhere)
+	bool ShouldRotate = false;
+
+	UPROPERTY(EditAnywhere)
+	float RotationAngle = 0;
+	
+	UPROPERTY(EditAnywhere)
+	float RotationSpeed = 0.1;
+
+	FVector InitialLocation;
+	FVector TargetLocation;
+
+	FRotator InitialRotation;
+	FRotator TargetRotation;
+	
 
 };

@@ -23,6 +23,9 @@ void UMover::BeginPlay()
 
 	InitialLocation = GetOwner()->GetActorLocation();
 	TargetLocation = InitialLocation + MoveDirection * MoveDistance;
+
+	InitialRotation = GetOwner()->GetActorRotation();
+	TargetRotation = InitialRotation + RotationAngle * FRotator(0, 1, 0);
 }
 
 
@@ -32,6 +35,7 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	Move(DeltaTime);
+	Rotate(DeltaTime);
 }
 
 void UMover::Move(float DeltaTime)
@@ -58,8 +62,38 @@ void UMover::Move(float DeltaTime)
 	}
 }
 
+void UMover::Rotate(float DeltaTime)
+{
+	if (ShouldRotate)
+	{
+		FRotator CurrentRotation = GetOwner()->GetActorRotation();
+
+		// If the rotation hasn't passed the target rotation yet, rotate
+		if (FMath::Abs(CurrentRotation.Yaw - TargetRotation.Yaw) > 10)
+		{
+			FRotator NewRotation = CurrentRotation + FRotator(0, FMath::Sign(RotationAngle) * RotationSpeed * DeltaTime, 0);
+			GetOwner()->SetActorRotation(NewRotation);
+		}
+		else
+		{
+			ShouldRotate = false;
+			GetOwner()->SetActorRotation(TargetRotation);
+
+			CurrentRotation = TargetRotation;
+			TargetRotation = InitialRotation;
+			InitialRotation = CurrentRotation;
+			RotationAngle = -RotationAngle;
+		}
+
+	}
+}
 
 void UMover::SetShouldMove(bool NewShouldMove)
 {
 	ShouldMove = NewShouldMove;
+}
+
+void UMover::SetShouldRotate(bool NewShouldRotate)
+{
+	ShouldRotate = NewShouldRotate;
 }

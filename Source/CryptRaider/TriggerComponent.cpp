@@ -40,6 +40,7 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 					if (Mover != nullptr)
 					{
 						Mover->SetShouldMove(true);
+						Mover->SetShouldRotate(true);
 					}
 					else
 					{
@@ -75,6 +76,7 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 						if (Mover != nullptr)
 						{
 							Mover->SetShouldMove(true);
+							Mover->SetShouldRotate(true);
 						}
 						else
 						{
